@@ -1,0 +1,292 @@
+Public con As New ADODB.Connection
+Public rs As New ADODB.Recordset
+
+
+
+
+Private Sub C_clear_Click()
+    Form1.T_nodaftar.Text = ""
+    Form1.T_nama_siswa.Text = ""
+    Form1.T_lahir.Text = ""
+    Form1.T_nama_ortu.Text = ""
+    Form1.T_alamat.Text = ""
+    Form1.T_krj_ortu.Text = ""
+    Form1.T_smp_asal.Text = ""
+    Form1.C_pil_1.Text = ""
+    Form1.C_pil_2.Text = ""
+    txt_noDaftar.Text = ""
+    cmd_cabut.Enabled = False
+    
+    T_bin.Text = 0
+    T_big.Text = 0
+    T_mat.Text = 0
+    T_IPA.Text = 0
+    T_IPS.Text = 0
+    T_PKN.Text = 0
+    L_nun_x_bbt_bin.Caption = 0
+    L_nun_x_bbt_big.Caption = 0
+    L_nun_x_bbt_mat.Caption = 0
+    L_nun_x_bbt_ipa.Caption = 0
+    L_nun_x_bbt_ips.Caption = 0
+    L_nun_x_bbt_pkn.Caption = 0
+    L_jml_nun.Caption = 0
+    L_TOTAL_BOBOT.Caption = 0
+    
+    Form1.T_nodaftar.SetFocus
+End Sub
+
+Private Sub C_entry_Click()
+    rs.AddNew
+    rs(0) = Form1.T_nodaftar.Text
+    rs(1) = Form1.T_nama_siswa.Text
+    rs(2) = Form1.T_lahir.Text
+    rs(3) = Form1.T_nama_ortu.Text
+    rs(4) = Form1.T_alamat.Text
+    rs(5) = Form1.T_krj_ortu.Text
+    rs(6) = Form1.T_smp_asal.Text
+    rs(7) = CSng(Form1.T_bin.Text)
+    rs(8) = CSng(Form1.T_big.Text)
+    rs(9) = CSng(Form1.T_mat.Text)
+    rs(10) = CSng(Form1.T_IPA.Text)
+    rs(11) = CSng(Form1.T_IPS.Text)
+    rs(12) = CSng(Form1.T_PKN.Text)
+    rs(13) = Form1.C_pil_1.Text
+    rs(14) = Form1.C_pil_2.Text
+    rs(15) = "TERDAFTAR"
+    rs(16) = Date
+    rs(17) = Form1.L_TOTAL_BOBOT.Caption
+    rs.Update
+    
+    C_clear_Click
+    
+    rs.Requery
+    rs.Sort = "no_daftar asc"
+    rs.MoveLast
+    Set DataGrid1.DataSource = rs
+End Sub
+
+Private Sub CABUT_DATA_Click()
+    Form1.Hide
+    Form2.Show
+End Sub
+
+Private Sub cmd_cabut_Click()
+    cmd_cabut.Enabled = False
+    
+    rs(15) = "DICABUT"
+    rs.Update
+    txt_noDaftar.Text = ""
+    txt_noDaftar.SetFocus
+End Sub
+
+Public Sub Form_Load()
+    '=============================================
+    'MEMBUKA KONEKSI DATABASE
+    '=============================================
+    If Form1.con.State = 1 Then Form1.con.Close
+    con.CursorLocation = adUseClient
+    con.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\dsa\data calon peserta didik.mdb;"
+    '=============================================
+    'MENYIMPAN SELURUH RECORD DI VARIABEL rs
+    '=============================================
+    rs.Open "select * from table1", con, adOpenKeyset, adLockOptimistic
+    '=============================================
+    'MENGURUTKAN RECORD PADA FIELD NO_DAFTAR
+    '=============================================
+    rs.Sort = "no_daftar asc"
+    rs.MoveLast
+    '=============================================
+    'MENAMPILKAN RECORD DI DATAGRID1
+    '=============================================
+    Set DataGrid1.DataSource = rs
+    '=============================================
+    'MENGHITUNG JUMLAH RECORD
+    '=============================================
+    T_juml_data.Text = rs.RecordCount
+End Sub
+
+Private Sub KELUAR_Click()
+    
+    End
+End Sub
+
+Private Sub PROSES_DATA_Click()
+'    rs_trm_ap.Close
+    Form1.Hide
+    Form3.Form_Load
+    Form3.Show
+'    Form3.cmd_proses_lanjutan.Caption = "PROSES KE 3"
+End Sub
+
+
+Private Sub T_alamat_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        T_krj_ortu.SetFocus
+    End If
+End Sub
+
+Private Sub T_big_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
+    If KeyAscii = 13 Then
+        perkalian_bobot_nilai
+        
+        Form1.T_mat.Text = ""
+        Form1.T_mat.SetFocus
+    End If
+End Sub
+
+Private Sub T_bin_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
+    If KeyAscii = 13 Then
+        perkalian_bobot_nilai
+        
+        Form1.T_big.Text = ""
+        Form1.T_big.SetFocus
+    End If
+End Sub
+
+Private Sub T_IPA_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
+    If KeyAscii = 13 Then
+        perkalian_bobot_nilai
+        
+        Form1.T_IPS.Text = ""
+        Form1.T_IPS.SetFocus
+    End If
+End Sub
+
+Private Sub T_IPS_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
+    If KeyAscii = 13 Then
+        perkalian_bobot_nilai
+        
+        Form1.T_PKN.Text = ""
+        Form1.T_PKN.SetFocus
+    End If
+End Sub
+
+Private Sub T_krj_ortu_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        T_smp_asal.SetFocus
+    End If
+End Sub
+
+Private Sub T_lahir_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        T_nama_ortu.SetFocus
+    End If
+End Sub
+
+Private Sub T_mat_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
+    If KeyAscii = 13 Then
+        perkalian_bobot_nilai
+        
+        T_IPA.Text = ""
+        T_IPA.SetFocus
+    End If
+End Sub
+
+Private Sub T_nama_ortu_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        T_alamat.SetFocus
+    End If
+End Sub
+
+Private Sub T_nama_siswa_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        T_lahir.SetFocus
+    End If
+End Sub
+
+Private Sub T_nodaftar_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        T_nama_siswa.SetFocus
+'    elseif KeyAscii=
+    End If
+End Sub
+
+Private Sub T_PKN_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
+    If KeyAscii = 13 Then
+        perkalian_bobot_nilai
+        
+        C_pil_1.SetFocus
+    End If
+End Sub
+
+Private Sub T_smp_asal_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        T_bin.Text = ""
+        T_bin.SetFocus
+    End If
+End Sub
+
+Private Sub C_pil_1_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        C_pil_2.SetFocus
+    End If
+End Sub
+
+Private Sub C_pil_2_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        C_entry.SetFocus
+    End If
+End Sub
+
+Function perkalian_bobot_nilai()
+    '=========================================
+    'INISIALISASI
+    '=========================================
+    Form1.L_nun_x_bbt_bin.Caption = 0
+    Form1.L_nun_x_bbt_big.Caption = 0
+    Form1.L_nun_x_bbt_mat.Caption = 0
+    Form1.L_nun_x_bbt_ipa.Caption = 0
+    Form1.L_nun_x_bbt_ips.Caption = 0
+    Form1.L_nun_x_bbt_pkn.Caption = 0
+    
+    Form1.L_jml_nun.Caption = ""
+    Form1.L_TOTAL_BOBOT.Caption = 0
+    '=========================================
+    'PROSES PERKALIAN
+    '=========================================
+    Form1.L_nun_x_bbt_bin.Caption = CSng(Form1.T_bin.Text) * CSng(Form1.L_bobot_bin.Caption)
+    Form1.L_nun_x_bbt_big.Caption = CSng(Form1.T_big.Text) * CSng(Form1.L_bobot_big.Caption)
+    Form1.L_nun_x_bbt_mat.Caption = CSng(Form1.T_mat.Text) * CSng(Form1.L_bobot_mat.Caption)
+    Form1.L_nun_x_bbt_ipa.Caption = CSng(Form1.T_IPA.Text) * CSng(Form1.L_bobot_ipa.Caption)
+    Form1.L_nun_x_bbt_ips.Caption = CSng(Form1.T_IPS.Text) * CSng(Form1.L_bobot_ips.Caption)
+    Form1.L_nun_x_bbt_pkn.Caption = CSng(Form1.T_PKN.Text) * CSng(Form1.L_bobot_pkn.Caption)
+    
+    Form1.L_jml_nun.Caption = CSng(Form1.T_bin.Text) + CSng(Form1.T_big.Text) + CSng(Form1.T_mat.Text) + CSng(Form1.T_IPA.Text) + CSng(Form1.T_IPS.Text) + CSng(Form1.T_PKN.Text)
+    Form1.L_TOTAL_BOBOT.Caption = CSng(Form1.L_nun_x_bbt_bin.Caption) + CSng(Form1.L_nun_x_bbt_big.Caption) + CSng(Form1.L_nun_x_bbt_mat.Caption) + CSng(Form1.L_nun_x_bbt_ipa.Caption) + CSng(Form1.L_nun_x_bbt_ips.Caption) + CSng(Form1.L_nun_x_bbt_pkn.Caption)
+End Function
+
+Private Sub txt_noDaftar_KeyPress(KeyAscii As Integer)
+    On Error Resume Next
+    If KeyAscii = 13 Then
+        rs.Sort = "no_daftar asc"
+        rs.MoveFirst
+        rs.Find "no_daftar='" & txt_noDaftar.Text & "'"
+        If rs.EOF Then
+            MsgBox "data tidak ditemukan"
+            cmd_cabut.Enabled = False
+            txt_noDaftar.SetFocus
+            txt_noDaftar.Text = ""
+        ElseIf rs(15) = "DICABUT" Then
+            MsgBox "data data telah dicabut"
+            cmd_cabut.Enabled = False
+            txt_noDaftar.SetFocus
+            txt_noDaftar.Text = ""
+        Else
+            cmd_cabut.Enabled = True
+            cmd_cabut.SetFocus
+        End If
+        
+        
+'        On Error Resume Next
+'        With Adodc1.Recordset
+'            .MoveFirst
+'            .Find "no_daftar='" & txt_noDaftar.Text & "'"
+'        End With
+    End If
+End Sub
